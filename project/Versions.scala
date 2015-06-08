@@ -6,7 +6,7 @@ object Versions extends WebJarsVersions with ScalaJSVersions with SharedVersions
 
 	val ammonite = "0.3.0"
 
-	val codemirrorFacade = "5.2-0.5"
+	val codemirrorFacade = "5.3-0.5"
 
 }
 
@@ -48,5 +48,7 @@ trait WebJarsVersions{
 	val semanticUI = "1.12.3"
 
 	val selectize = "0.12.0"
+
+	val codemirror = "5.3"
 }
 

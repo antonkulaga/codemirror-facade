@@ -51,7 +51,7 @@ object Dependencies {
 
 		"org.webjars" % "selectize.js" % Versions.selectize, //select control
 
-		"org.webjars" % "codemirror" % "5.3"
+		"org.webjars" % "codemirror" % Versions.codemirror
 	))
 
 	//common purpose libs
