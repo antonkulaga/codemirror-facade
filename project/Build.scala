@@ -16,47 +16,46 @@ object Build extends PreviewBuild {
 
 	lazy val root = Project("root",file("."),settings = commonSettings)
 		.settings(
-			mainClass in Compile := (mainClass in backend in Compile).value,
-			libraryDependencies += "com.lihaoyi" % "ammonite-repl" % Versions.ammonite cross CrossVersion.full,
-			initialCommands in console := """ammonite.repl.Repl.run("")""" //better console
-		) dependsOn backend aggregate(backend,frontend)
+			mainClass in Compile := (mainClass in previewJVM in Compile).value,
+			(managedClasspath in Runtime) += (packageBin in previewJVM in Assets).value
+		) dependsOn previewJVM aggregate(previewJVM, previewJS)
 }
 
 class PreviewBuild extends FacadeBuild
 {
 
-	// code shared between backend and frontend
-	lazy val shared = crossProject
-	  .crossType(CrossType.Pure)
-	  .in(file("preview/shared"))
-	  .settings(commonSettings: _*)
-	  .settings(name := "shared")
-	lazy val sharedJVM = shared.jvm
-	lazy val sharedJS = shared.js
-
-	// Scala-Js preview frontend
-	lazy val frontend = Project("frontend", file("preview/frontend"))
-		.settings(commonSettings: _*)
+	// some useful UI controls + shared code
+	lazy val preview = crossProject
+		.crossType(CrossType.Full)
+		.in(file("preview"))
+		.settings(commonSettings++publishSettings: _*)
 		.settings(
-		persistLauncher in Compile := true,
-		persistLauncher in Test := false,
-		jsDependencies += RuntimeDOM % "test",
-		testFrameworks += new TestFramework("utest.runner.Framework"),
-		libraryDependencies ++= Dependencies.sjsLibs.value++Dependencies.templates.value
-	).enablePlugins(ScalaJSPlugin).dependsOn(sharedJS,facade)
+			name := "preview"
+		)
+		.jsConfigure(p=>p.dependsOn(facade))
+		.jvmConfigure(p=>p.enablePlugins(SbtTwirl,SbtWeb))
+		.jvmSettings(Revolver.settings:_*)
+		.jvmSettings(
+			libraryDependencies ++= Dependencies.akka.value ++ Dependencies.webjars.value,
+			mainClass in Compile :=Some("org.denigma.preview.Main"),
+			mainClass in Revolver.reStart := Some("org.denigma.preview.Main"),
+			(managedClasspath in Runtime) += (packageBin in Assets).value
+		)
+		.jsSettings(
+			libraryDependencies ++= Dependencies.sjsLibs.value,
+			persistLauncher in Compile := true,
+			persistLauncher in Test := false,
+			jsDependencies += RuntimeDOM % "test"
+		)
 
-	//backend preview project
-	lazy val backend = Project("backend", file("preview/backend"),settings = commonSettings++Revolver.settings)
-		.settings(
-			libraryDependencies ++= Dependencies.akka.value++Dependencies.templates.value++Dependencies.webjars.value,
-				mainClass in Compile :=Some("org.denigma.preview.Main"),
-        mainClass in Revolver.reStart := Some("org.denigma.preview.Main"),
-        resourceGenerators in Compile <+=  (fastOptJS in Compile in frontend,
-				  packageScalaJSLauncher in Compile in frontend) map( (f1, f2) => Seq(f1.data, f2.data)),
-			watchSources <++= (watchSources in frontend),
-      (managedClasspath in Runtime) += (packageBin in Assets).value
-		).enablePlugins(SbtTwirl,SbtWeb) dependsOn sharedJVM
-
+	lazy val previewJS = preview.js
+	lazy val previewJVM = preview.jvm settings (
+		resourceGenerators in Compile <+=
+			(fastOptJS in Compile in previewJS,	packageScalaJSLauncher in Compile in  previewJS) map(
+				(f1, f2) => Seq(f1.data, f2.data)
+				),
+		watchSources <++= (watchSources in  previewJS)
+		)
 }
 
 class FacadeBuild  extends sbt.Build{
@@ -93,11 +92,13 @@ class FacadeBuild  extends sbt.Build{
 		updateOptions := updateOptions.value.withCachedResolution(true) //to speed up dependency resolution
 	)
 
-	lazy val facade = Project("codemirror-facade", file("codemirror-facade"))
+	lazy val libName = "codemirror"
+
+	lazy val facade = Project(libName, file("facade"))
 		.settings(commonSettings++publishSettings: _*)
 		.settings(
-			name := "codemirror-facade",
-			version := Versions.codemirrorFacade,
+			name := s"$libName-facade",
+			version := Versions.facade,
 			libraryDependencies ++= Dependencies.facadeDependencies.value
 		) enablePlugins ScalaJSPlugin
 
