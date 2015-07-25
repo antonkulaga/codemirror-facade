@@ -46,4 +46,7 @@ class EditorConfigurationBuilder(val dict:OptMap)
   def flattenSpans(value: Boolean) = jsOpt("flattenSpans",value)
   def maxHighlightLength(value: Double) = jsOpt("maxHighlightLength",value)
   def viewportMargin(value: Integer) = jsOpt("viewportMargin",value)
+  //def noMargin() = jsOpt("viewportMargin","Infinity")
+
+
 }

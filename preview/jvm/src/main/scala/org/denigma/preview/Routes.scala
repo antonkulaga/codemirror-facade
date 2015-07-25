@@ -1,8 +1,10 @@
 package org.denigma.preview
 
+import akka.http.extensions.pjax.PJax
 import akka.http.scaladsl.model._
+import akka.http.scaladsl.server.Directives
 import akka.http.scaladsl.server.Directives._
-import org.denigma.preview.templates.MyStyles
+import org.denigma.preview.templates.{Twirl, MyStyles}
 import play.twirl.api.Html
 
 import scalacss.Defaults._
@@ -11,7 +13,8 @@ import scalacss.Defaults._
 /**
  * Trait that countains routes and handlers
  */
-trait Routes extends  PJax{
+trait Routes extends Directives with PJax
+{
 
   lazy val webjarsPrefix = "lib"
 
@@ -35,24 +38,10 @@ trait Routes extends  PJax{
   def webjars =pathPrefix(webjarsPrefix ~ Slash)  {  getFromResourceDirectory(webjarsPrefix)  }
 
 
-  /**
-   * loads page into index. It almost works, the only problem is that I have to change relative pathes in my templates
-   * @param content
-   * @param req
-   * @return
-   */
-  def loadPage(content:Html)(implicit req:HttpRequest): HttpResponse = {
-    val cont = if(isPjax(req))  content.body else html.index(  Some(content ) ).body
-    HttpResponse(  entity = HttpEntity(MediaTypes.`text/html`, cont))
-  }
+  def defaultPage: Option[Html] = None
+
+
+  val loadPage:Html=>Html = h=>html.index(Some(h))
 
   def routes = index ~  webjars ~ mystyles ~ loadResources
-}
-
-trait PJax {
-
-  def isPjax(req:HttpRequest) = req.headers.exists(h=>h.lowercaseName()=="x-pjax")
-
-  def loadPage(content:Html)(implicit req:HttpRequest): HttpResponse //should load page in a pjax way
-
 }

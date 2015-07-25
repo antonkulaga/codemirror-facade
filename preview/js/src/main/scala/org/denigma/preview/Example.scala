@@ -14,7 +14,7 @@ object Example extends ExampleData{
   val name:String = "codemirror"
 
   def activate(): Unit = {
-    activate("scala","clike",scalaCode)
+    activate("scala","text/x-scala",scalaCode)
     activate("html","htmlmixed",htmlCode)
     activate("sparql","sparql",sparqlCode)
     activate("turtle","turtle",turtleCode)
@@ -23,7 +23,7 @@ object Example extends ExampleData{
 
 
   def activate(id:String,mode:String,code:String): Unit = {
-    val params:EditorConfiguration =EditorConfig.mode(mode).lineNumbers(true).value(code)
+    val params:EditorConfiguration =EditorConfig.mode(mode).lineNumbers(true).value(code)//.noMargin()
     val editor = dom.document.getElementById(id) match {
       case el:HTMLTextAreaElement =>
         val m = CodeMirror.fromTextArea(el,params)

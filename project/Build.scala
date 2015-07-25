@@ -1,16 +1,18 @@
-import com.typesafe.sbt.SbtNativePackager.autoImport._
-import com.typesafe.sbt.web.SbtWeb
+import bintray._
+import bintray.BintrayPlugin.autoImport._
+import com.typesafe.sbt.web._
+import com.typesafe.sbt.web.SbtWeb.autoImport._
+import com.typesafe.sbt.web.pipeline.Pipeline
 import org.scalajs.sbtplugin.ScalaJSPlugin
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
-import sbt.Keys._
-import sbt._
-import bintray._
-import BintrayPlugin.autoImport._
-import spray.revolver.RevolverPlugin._
 import play.twirl.sbt._
-import play.twirl.sbt.SbtTwirl.autoImport._
-import com.typesafe.sbt.web.SbtWeb.autoImport._
-
+import playscalajs.PlayScalaJS.autoImport._
+import playscalajs.{PlayScalaJS, ScalaJSPlay}
+import sbt.Keys._
+import sbt.Project.{Initialize, projectToRef}
+import sbt._
+import spray.revolver.RevolverPlugin._
+import com.typesafe.sbt.gzip.Import.gzip
 
 object Build extends PreviewBuild {
 
@@ -24,6 +26,15 @@ object Build extends PreviewBuild {
 class PreviewBuild extends FacadeBuild
 {
 
+	val scalaJSDevStage  = Def.taskKey[Pipeline.Stage]("Apply fastOptJS on all Scala.js projects")
+
+
+	def scalaJSDevTaskStage: Def.Initialize[Task[Pipeline.Stage]] = Def.task { mappings: Seq[PathMapping] =>
+		//dirty huck to use
+		mappings ++ PlayScalaJS.devFiles(Compile).value ++ PlayScalaJS.sourcemapScalaFiles(fastOptJS).value
+	}
+
+
 	// some useful UI controls + shared code
 	lazy val preview = crossProject
 		.crossType(CrossType.Full)
@@ -32,30 +43,28 @@ class PreviewBuild extends FacadeBuild
 		.settings(
 			name := "preview"
 		)
-		.jsConfigure(p=>p.dependsOn(facade))
-		.jvmConfigure(p=>p.enablePlugins(SbtTwirl,SbtWeb))
-		.jvmSettings(Revolver.settings:_*)
-		.jvmSettings(
-			libraryDependencies ++= Dependencies.akka.value ++ Dependencies.webjars.value,
-			mainClass in Compile :=Some("org.denigma.preview.Main"),
-			mainClass in Revolver.reStart := Some("org.denigma.preview.Main"),
-			(managedClasspath in Runtime) += (packageBin in Assets).value
-		)
+		.jsConfigure(p=>p.dependsOn(facade).enablePlugins(ScalaJSPlay))
 		.jsSettings(
 			libraryDependencies ++= Dependencies.sjsLibs.value,
 			persistLauncher in Compile := true,
 			persistLauncher in Test := false,
 			jsDependencies += RuntimeDOM % "test"
 		)
+		.jvmConfigure(p=>p.enablePlugins(SbtTwirl,SbtWeb).enablePlugins(PlayScalaJS)) //despite "Play" in name it is actually sbtweb-related plugin
+		.jvmSettings(Revolver.settings:_*)
+		.jvmSettings(
+			libraryDependencies ++= Dependencies.akka.value ++ Dependencies.webjars.value,
+			mainClass in Compile :=Some("org.denigma.preview.Main"),
+			mainClass in Revolver.reStart := Some("org.denigma.preview.Main"),
+			scalaJSDevStage := scalaJSDevTaskStage.value,
+			pipelineStages := Seq(scalaJSProd,gzip),
+			pipelineStages in Assets := Seq(scalaJSDevStage,gzip), //for run configuration
+			(managedClasspath in Runtime) += (packageBin in Assets).value //to package production deps
+		)
 
 	lazy val previewJS = preview.js
-	lazy val previewJVM = preview.jvm settings (
-		resourceGenerators in Compile <+=
-			(fastOptJS in Compile in previewJS,	packageScalaJSLauncher in Compile in  previewJS) map(
-				(f1, f2) => Seq(f1.data, f2.data)
-				),
-		watchSources <++= (watchSources in  previewJS)
-		)
+	lazy val previewJVM = preview.jvm settings( scalaJSProjects := Seq(previewJS) )
+	Defaults
 }
 
 class FacadeBuild  extends sbt.Build{
