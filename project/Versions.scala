@@ -6,7 +6,7 @@ object Versions extends WebJarsVersions with ScalaJSVersions with SharedVersions
 
 	val akkaHttpExtensions = "0.0.5"
 
-	val ammonite = "0.3.2"
+	val ammonite = "0.4.3"
 
 }
 

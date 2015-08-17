@@ -64,7 +64,6 @@ class PreviewBuild extends FacadeBuild
 
 	lazy val previewJS = preview.js
 	lazy val previewJVM = preview.jvm settings( scalaJSProjects := Seq(previewJS) )
-	Defaults
 }
 
 class FacadeBuild  extends sbt.Build{

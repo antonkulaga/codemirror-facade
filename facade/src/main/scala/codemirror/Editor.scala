@@ -48,7 +48,9 @@ trait Editor extends js.Object {
   def getScrollerElement(): HTMLElement = js.native
   def getGutterElement(): HTMLElement = js.native
   def on(eventName: String, handler: js.Function1[Editor, Unit]): Unit = js.native
+  def on(eventName: String, handler: js.Function2[Editor, Any, Unit]): Unit = js.native //not sure if
   def off(eventName: String, handler: js.Function1[Editor, Unit]): Unit = js.native
+  def off(eventName: String, handler: js.Function2[Editor, Any, Unit]): Unit = js.native
 }
 
 @JSName("Doc")
