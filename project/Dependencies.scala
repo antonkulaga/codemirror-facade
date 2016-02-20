@@ -12,9 +12,7 @@ object Dependencies {
 	//akka-related libs
 	lazy val akka = Def.setting(Seq(
 
-		"org.denigma" %%% "akka-http-extensions" % Versions.akkaHttpExtensions,
-
-		"com.typesafe.akka" %% "akka-http-testkit-experimental" % Versions.akkaHttp
+		"org.denigma" %%% "akka-http-extensions" % Versions.akkaHttpExtensions
 	))
 
 
@@ -37,8 +35,6 @@ object Dependencies {
 	lazy val webjars= Def.setting(Seq(
 
 		"org.webjars" % "Semantic-UI" % Versions.semanticUI, //css theme, similar to bootstrap
-
-		"org.webjars" % "selectize.js" % Versions.selectize, //select control
 
 		"org.webjars" % "codemirror" % Versions.codemirror
 	))

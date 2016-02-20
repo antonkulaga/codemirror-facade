@@ -22,13 +22,13 @@ trait Routes extends Directives with PJax
 
   def index =  pathSingleSlash{ctx=>
     ctx.complete {
-      HttpResponse(  entity = HttpEntity(MediaTypes.`text/html`, html.index(None).body  ))
+      HttpResponse(  entity = HttpEntity(MediaTypes.`text/html`.withCharset(HttpCharsets.`UTF-8`), html.index(None).body  ))
     }
   }
 
   def mystyles =    path("styles" / "mystyles.css"){
     complete  {
-      HttpResponse(  entity = HttpEntity(MediaTypes.`text/css`,  MyStyles.render   ))   }
+      HttpResponse(  entity = HttpEntity(MediaTypes.`text/css`.withCharset(HttpCharsets.`UTF-8`),  MyStyles.render   ))   }
   }
 
   def loadResources = pathPrefix(resourcePrefix~Slash) {
@@ -41,7 +41,7 @@ trait Routes extends Directives with PJax
   def defaultPage: Option[Html] = None
 
 
-  val loadPage:Html=>Html = h=>html.index(Some(h))
+  val loadPage:Html=>Html = h=> html.index(Some(h))
 
   def routes = index ~  webjars ~ mystyles ~ loadResources
 }
