@@ -51,7 +51,7 @@ lazy val facade = Project(libName, file("facade"))
   ) enablePlugins ScalaJSPlugin disablePlugins RevolverPlugin
 
 
-val scalaJSDevStage  = Def.taskKey[Pipeline.Stage]("Apply fastOptJS on all Scala.js projects")
+lazy val scalaJSDevStage  = Def.taskKey[Pipeline.Stage]("Apply fastOptJS on all Scala.js projects")
 
 def scalaJSDevTaskStage: Def.Initialize[Task[Pipeline.Stage]] = Def.task { mappings: Seq[PathMapping] =>
   mappings ++ PlayScalaJS.devFiles(Compile).value ++ PlayScalaJS.sourcemapScalaFiles(fastOptJS).value
@@ -73,13 +73,15 @@ lazy val preview = crossProject
     persistLauncher in Test := false,
     jsDependencies += RuntimeDOM % "test"
   )
-  .jvmConfigure(p=>p.enablePlugins(SbtTwirl,SbtWeb).enablePlugins(PlayScalaJS)) //despite "Play" in name it is actually sbtweb-related plugin
+  .jvmConfigure(p=>p.enablePlugins(SbtTwirl, SbtWeb).enablePlugins(PlayScalaJS)) //despite "Play" in name it is actually sbtweb-related plugin
   .jvmSettings(
   libraryDependencies ++= Dependencies.akka.value ++ Dependencies.webjars.value,
   mainClass in Compile :=Some("org.denigma.preview.Main"),
+  scalaJSDevStage := scalaJSDevTaskStage.value,
   //pipelineStages := Seq(scalaJSProd, gzip),
   (emitSourceMaps in fullOptJS) := true,
-  pipelineStages in Assets := Seq(scalaJSDevStage/*scalaJSProd*/, gzip) //for run configuration
+  pipelineStages in Assets := Seq(scalaJSDevStage/*scalaJSProd*/, gzip), //for run configuration
+  (managedClasspath in Runtime) += (packageBin in Assets).value //to package production deps
 )
 lazy val previewJS = preview.js
 lazy val previewJVM = preview.jvm settings( scalaJSProjects := Seq(previewJS) )
@@ -87,5 +89,5 @@ lazy val previewJVM = preview.jvm settings( scalaJSProjects := Seq(previewJS) )
 lazy val root = Project("root",file("."),settings = commonSettings)
   .settings(
     mainClass in Compile := (mainClass in previewJVM in Compile).value,
-    (fullClasspath in Runtime) += (packageBin in previewJVM in Assets).value
+    (managedClasspath in Runtime) += (packageBin in previewJVM in Assets).value
   ) dependsOn previewJVM aggregate(previewJVM, previewJS)

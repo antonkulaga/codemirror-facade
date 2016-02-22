@@ -36,7 +36,9 @@ object Dependencies {
 
 		"org.webjars" % "Semantic-UI" % Versions.semanticUI, //css theme, similar to bootstrap
 
-		"org.webjars" % "codemirror" % Versions.codemirror
+		"org.webjars" % "codemirror" % Versions.codemirror,
+
+		"org.webjars.bower" % "jquery" % Versions.jquery
 	))
 
 	//common purpose libs

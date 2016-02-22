@@ -42,7 +42,7 @@ trait SharedVersions
 
 trait WebJarsVersions{
 
-	val jquery =  "2.2.3"
+	val jquery =  "2.2.0"
 
 	val semanticUI = "2.1.8"
 
