@@ -38,7 +38,7 @@ object Dependencies {
 
 		"org.webjars" % "codemirror" % Versions.codemirror,
 
-		"org.webjars.bower" % "jquery" % Versions.jquery
+		"org.webjars" % "jquery" % Versions.jquery
 	))
 
 	//common purpose libs

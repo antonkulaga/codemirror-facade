@@ -7,6 +7,22 @@ import scala.scalajs.js
 import scala.scalajs.js._
 import scala.scalajs.js.annotation.JSName
 
+@js.native
+trait LineInfo extends js.Object {
+
+  val line: Int = js.native
+  val handle: LineHandle = js.native
+  val text: String = js.native
+  val gutterMarkers = js.native
+  val textClass = js.native
+  val bgClass = js.native
+  val wrapClass = js.native
+  val widgets = js.native
+
+/*  return {line: n, handle: line, text: line.text, gutterMarkers: line.gutterMarkers,
+    textClass: line.textClass, bgClass: line.bgClass, wrapClass: line.wrapClass,
+    widgets: line.widgets};*/
+}
 
 trait Editor extends js.Object {
   def hasFocus(): Boolean = js.native

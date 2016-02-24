@@ -40,7 +40,6 @@ class SidebarView (val elem: Element) extends BindableView {
         .withBinder(new GeneralBinder(_))
         .withBinder(new NavigationBinder(_))
     }
-
 }
 
 

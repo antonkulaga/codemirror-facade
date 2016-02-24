@@ -4,7 +4,7 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-web" % "1.2.3") // advanced assets handli
 
 addSbtPlugin("io.spray" % "sbt-revolver" % "0.8.0") //live refresh
 
-addSbtPlugin("com.vmunier" % "sbt-play-scalajs" % "0.2.8")
+addSbtPlugin("com.vmunier" % "sbt-play-scalajs" % "0.2.10")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-twirl" % "1.1.1") // templates
 

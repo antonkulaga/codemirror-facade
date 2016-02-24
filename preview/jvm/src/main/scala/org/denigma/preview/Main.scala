@@ -11,7 +11,7 @@ object Main extends App
 
   sys.addShutdownHook(system.terminate())
   var main: ActorRef = system.actorOf(Props[MainActor])
-  main ! AppMessages.Start(5553)
+  main ! AppMessages.Start(5554)
 
 
 }

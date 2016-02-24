@@ -3,6 +3,7 @@ package org.denigma.preview
 import org.denigma.binding.binders.{NavigationBinder, GeneralBinder}
 import org.denigma.binding.extensions.sq
 import org.denigma.binding.views.BindableView
+import org.denigma.controls.code.CodeBinder
 import org.querki.jquery._
 import org.scalajs.dom
 import org.scalajs.dom.raw.HTMLElement
@@ -31,14 +32,15 @@ object FrontEnd extends BindableView with scalajs.js.JSApp
   /**
    * Register views
    */
-  override lazy val injector = defaultInjector.register("sidebar")(
-    (el, params) => new SidebarView(el).withBinder(new GeneralBinder(_)))
+  override lazy val injector = defaultInjector
+    .register("sidebar")((el, params) => new SidebarView(el).withBinder(new GeneralBinder(_)))
+    .register("intro")((el, params) => new IntroView(el).withBinder(new CodeBinder(_)))
+    .register("features")((el, params) => new FeaturesView(el).withBinder(new CodeBinder(_)))
 
 
   @JSExport
   def main(): Unit = {
     this.bindView()
-    Example.activate() //activate examples
   }
 
   @JSExport
@@ -63,7 +65,7 @@ object FrontEnd extends BindableView with scalajs.js.JSApp
   }
 
 
-  withBinders(me => List(new GeneralBinder(me), new NavigationBinder(me)))
+  withBinders(me => List(new CodeBinder(me), new NavigationBinder(me)))
 
 
 }
