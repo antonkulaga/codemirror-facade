@@ -81,7 +81,7 @@ lazy val preview = crossProject
   //pipelineStages := Seq(scalaJSProd, gzip),
   (emitSourceMaps in fullOptJS) := true,
   pipelineStages in Assets := Seq(scalaJSDevStage/*scalaJSProd*/, gzip), //for run configuration
-  (managedClasspath in Runtime) += (packageBin in Assets).value //to package production deps
+  (fullClasspath in Runtime) += (packageBin in Assets).value //to package production deps
 )
 lazy val previewJS = preview.js
 lazy val previewJVM = preview.jvm settings( scalaJSProjects := Seq(previewJS) )
@@ -89,5 +89,5 @@ lazy val previewJVM = preview.jvm settings( scalaJSProjects := Seq(previewJS) )
 lazy val root = Project("root",file("."),settings = commonSettings)
   .settings(
     mainClass in Compile := (mainClass in previewJVM in Compile).value,
-    (managedClasspath in Runtime) += (packageBin in previewJVM in Assets).value
+    (fullClasspath in Runtime) += (packageBin in previewJVM in Assets).value
   ) dependsOn previewJVM aggregate(previewJVM, previewJS)

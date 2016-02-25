@@ -24,6 +24,7 @@ trait LineInfo extends js.Object {
     widgets: line.widgets};*/
 }
 
+@js.native
 trait Editor extends js.Object {
   def hasFocus(): Boolean = js.native
   def findPosH(start: Position, amount: Double, unit: String, visually: Boolean): js.Any = js.native
@@ -40,7 +41,8 @@ trait Editor extends js.Object {
   def clearGutter(gutterID: String): Unit = js.native
   def addLineClass(line: js.Any, where: String, _clazz: String): LineHandle = js.native
   def removeLineClass(line: js.Any, where: String, clazz: String): LineHandle = js.native
-  def lineInfo(line: js.Any): js.Any = js.native
+  def lineInfo(line: Int): LineInfo = js.native
+
   def addWidget(pos: Position, node: HTMLElement, scrollIntoView: Boolean): Unit = js.native
   def addLineWidget(line: js.Any, node: HTMLElement, options: js.Any = js.native): LineWidget = js.native
   def setSize(width: js.Any, height: js.Any): Unit = js.native
@@ -64,11 +66,15 @@ trait Editor extends js.Object {
   def getScrollerElement(): HTMLElement = js.native
   def getGutterElement(): HTMLElement = js.native
   def on(eventName: String, handler: js.Function1[Editor, Unit]): Unit = js.native
-  def on(eventName: String, handler: js.Function2[Editor, Any, Unit]): Unit = js.native //not sure if
+  def on(eventName: String, handler: js.Function2[Editor, _, Unit]): Unit = js.native //not sure if
+
   def off(eventName: String, handler: js.Function1[Editor, Unit]): Unit = js.native
   def off(eventName: String, handler: js.Function2[Editor, Any, Unit]): Unit = js.native
+
 }
 
+
+@js.native
 @JSName("Doc")
 class Doc protected () extends js.Object {
   def this(text: String, mode: js.Any = js.native, firstLineNumber: Double = js.native) = this()
@@ -116,21 +122,25 @@ class Doc protected () extends js.Object {
   def indexFromPos(`object`: Position): Double = js.native
 }
 
+@js.native
 trait LineHandle extends js.Object {
   var text: String = js.native
 }
 
+@js.native
 trait TextMarker extends js.Object {
   def clear(): Unit = js.native
   def find(): Position = js.native
   def getOptions(copyWidget: Boolean): TextMarkerOptions = js.native
 }
 
+@js.native
 trait LineWidget extends js.Object {
   def clear(): Unit = js.native
   def changed(): Unit = js.native
 }
 
+@js.native
 trait EditorChange extends js.Object {
   var from: Position = js.native
   var to: Position = js.native
@@ -138,20 +148,24 @@ trait EditorChange extends js.Object {
   var removed: String = js.native
 }
 
+@js.native
 trait EditorChangeLinkedList extends EditorChange {
   var next: EditorChangeLinkedList = js.native
 }
 
+@js.native
 trait EditorChangeCancellable extends EditorChange {
   def update(from: Position = js.native, to: Position = js.native, text: String = js.native): Unit = js.native
   def cancel(): Unit = js.native
 }
 
+@js.native
 trait Position extends js.Object {
   var ch: Double = js.native
   var line: Double = js.native
 }
 
+@js.native
 trait EditorConfiguration extends js.Object {
   var value: js.Any = js.native
   var mode: js.Any = js.native
@@ -189,6 +203,7 @@ trait EditorConfiguration extends js.Object {
   var viewportMargin: Double = js.native
 }
 
+@js.native
 trait TextMarkerOptions extends js.Object {
   var className: String = js.native
   var inclusiveLeft: Boolean = js.native
@@ -204,6 +219,7 @@ trait TextMarkerOptions extends js.Object {
   var shared: Boolean = js.native
 }
 
+@js.native
 @JSName("CodeMirror")
 object CodeMirror extends js.Object {
   var Pass: js.Any = js.native

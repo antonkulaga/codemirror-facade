@@ -15,6 +15,7 @@ class IntroView(val elem: Element) extends BindableView with ExampleData{
     activate("sparql", "sparql",sparqlCode)
     activate("turtle", "turtle",turtleCode)
     activate("r","r", rCode)
+    activate("kappa","Kappa", kappaCode)
   }
 
 
