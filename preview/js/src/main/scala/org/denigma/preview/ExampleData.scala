@@ -5,17 +5,17 @@ import org.denigma.codemirror.{CodeMirror, EditorConfiguration}
 import org.scalajs.dom
 import org.scalajs.dom.raw.HTMLTextAreaElement
 
-trait ExampleData {
+trait ExampleData extends ExampleKappaData {
 
   lazy val scalaCode = """
-                         |  import org.denigma.codemirror.extensions.EditorConfig
-                         |  import org.denigma.codemirror.{CodeMirror, EditorConfiguration}
+                         |  import org.denigma.org.denigma.codemirror.extensions.EditorConfig
+                         |  import org.denigma.org.denigma.codemirror.{CodeMirror, EditorConfiguration}
                          |  import org.scalajs.dom
                          |  import org.scalajs.dom.raw.HTMLTextAreaElement
                          |
                          |  val id = "scala"
                          |  val code = println("hello Scala!") //code to add
-                         |  val mode = "clike" //language mode, some modes have weird names in codemirror
+                         |  val mode = "clike" //language mode, some modes have weird names in org.denigma.codemirror
                          |  val params:EditorConfiguration =EditorConfig.mode(mode).lineNumbers(true) //config
                          |  val editor = dom.document.getElementById(id) match {
                          |    case el:HTMLTextAreaElement =>
@@ -76,38 +76,44 @@ trait ExampleData {
       |}
     """.stripMargin
 
+}
+
+trait ExampleKappaData{
+
+
   lazy val kappaCode =
     """
-       | ####### TEMPLATE MODEL AS DESCRIBED IN THE MANUAL#############
-       |
-       |#### Signatures
-       |%agent: A(x,c) # Declaration of agent A
-       |%agent: B(x) # Declaration of B
-       |%agent: C(x1~u~p,x2~u~p) # Declaration of C with 2 modifiable sites
-       |
-       |#### Rules
-       |'a.b' A(x),B(x) <-> A(x!1),B(x!1) @ 'on_rate','off_rate' #A binds B
-       |'ab.c' A(x!_,c),C(x1~u) ->A(x!_,c!2),C(x1~u!2) @ 'on_rate' #AB binds C
-       |'mod x1' C(x1~u!1),A(c!1) ->C(x1~p),A(c) @ 'mod_rate' #AB modifies x1
-       |'a.c' A(x,c),C(x1~p,x2~u) -> A(x,c!1),C(x1~p,x2~u!1) @ 'on_rate' #A binds C on x2
-       |'mod x2' A(x,c!1),C(x1~p,x2~u!1) -> A(x,c),C(x1~p,x2~p) @ 'mod_rate' #A modifies x2
-       |
-       |#### Variables
-       |%var: 'on_rate' 1.0E-4 # per molecule per second
-       |%var: 'off_rate' 0.1 # per second
-       |%var: 'mod_rate' 1 # per second
-       |%obs: 'AB' A(x!x.B)
-       |%obs: 'Cuu' C(x1~u?,x2~u?)
-       |%obs: 'Cpu' C(x1~p?,x2~u?)
-       |%obs: 'Cpp' C(x1~p?,x2~p?)
-       |
-       |
-       |#### Initial conditions
-       |%init: 1000 A(),B()
-       |%init: 10000 C()
-       |
-       |%mod: [true] do $FLUX "flux.html" [true]
-       |%mod: [T]>20 do $FLUX "flux.html" [false]
-       |%def: "relativeFluxMaps" "true"
+      | ####### TEMPLATE MODEL AS DESCRIBED IN THE MANUAL#############
+      |
+      |#### Signatures
+      |%agent: A(x,c) # Declaration of agent A
+      |%agent: B(x) # Declaration of B
+      |%agent: C(x1~u~p,x2~u~p) # Declaration of C with 2 modifiable sites
+      |
+      |#### Rules
+      |'a.b' A(x),B(x) <-> A(x!1),B(x!1) @ 'on_rate','off_rate' #A binds B
+      |'ab.c' A(x!_,c),C(x1~u) ->A(x!_,c!2),C(x1~u!2) @ 'on_rate' #AB binds C
+      |'mod x1' C(x1~u!1),A(c!1) ->C(x1~p),A(c) @ 'mod_rate' #AB modifies x1
+      |'a.c' A(x,c),C(x1~p,x2~u) -> A(x,c!1),C(x1~p,x2~u!1) @ 'on_rate' #A binds C on x2
+      |'mod x2' A(x,c!1),C(x1~p,x2~u!1) -> A(x,c),C(x1~p,x2~p) @ 'mod_rate' #A modifies x2
+      |
+      |#### Variables
+      |%var: 'on_rate' 1.0E-4 # per molecule per second
+      |%var: 'off_rate' 0.1 # per second
+      |%var: 'mod_rate' 1 # per second
+      |%obs: 'AB' A(x!x.B)
+      |%obs: 'Cuu' C(x1~u?,x2~u?)
+      |%obs: 'Cpu' C(x1~p?,x2~u?)
+      |%obs: 'Cpp' C(x1~p?,x2~p?)
+      |
+      |
+      |#### Initial conditions
+      |%init: 1000 A(),B()
+      |%init: 10000 C()
+      |
+      |%mod: [true] do $FLUX "flux.html" [true]
+      |%mod: [T]>20 do $FLUX "flux.html" [false]
+      |%def: "relativeFluxMaps" "true"
     """.stripMargin
+
 }

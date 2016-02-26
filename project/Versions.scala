@@ -27,6 +27,8 @@ trait SharedVersions
 
 	val scalaTest =  "3.0.0-SNAP13"
 
+	val fastParse = "0.3.5"
+
 }
 
 

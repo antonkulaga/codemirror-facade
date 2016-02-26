@@ -35,7 +35,7 @@ object FrontEnd extends BindableView with scalajs.js.JSApp
   override lazy val injector = defaultInjector
     .register("sidebar")((el, params) => new SidebarView(el).withBinder(new GeneralBinder(_)))
     .register("intro")((el, params) => new IntroView(el).withBinder(new CodeBinder(_)))
-    .register("features")((el, params) => new FeaturesView(el).withBinder(new CodeBinder(_)))
+    .register("features")((el, params) => new FeaturesView(el))
 
 
   @JSExport

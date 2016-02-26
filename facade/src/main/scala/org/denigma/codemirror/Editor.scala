@@ -1,11 +1,10 @@
-package org.denigma
-package codemirror
+package org.denigma.codemirror
 
 import org.scalajs._
 import org.scalajs.dom.raw.{HTMLTextAreaElement, Event, HTMLElement}
 import scala.scalajs.js
 import scala.scalajs.js._
-import scala.scalajs.js.annotation.JSName
+import scala.scalajs.js.annotation.{ScalaJSDefined, JSName}
 
 @js.native
 trait LineInfo extends js.Object {
@@ -13,11 +12,11 @@ trait LineInfo extends js.Object {
   val line: Int = js.native
   val handle: LineHandle = js.native
   val text: String = js.native
-  val gutterMarkers = js.native
-  val textClass = js.native
-  val bgClass = js.native
-  val wrapClass = js.native
-  val widgets = js.native
+  val gutterMarkers: js.Array[String] = js.native
+  val textClass: String = js.native
+  val bgClass: String = js.native
+  val wrapClass: String = js.native
+  val widgets: js.Array[String] = js.native
 
 /*  return {line: n, handle: line, text: line.text, gutterMarkers: line.gutterMarkers,
     textClass: line.textClass, bgClass: line.bgClass, wrapClass: line.wrapClass,
@@ -37,7 +36,7 @@ trait Editor extends js.Object {
   def removeOverlay(mode: js.Any): Unit = js.native
   def getDoc(): Doc = js.native
   def swapDoc(doc: Doc): Doc = js.native
-  def setGutterMarker(line: js.Any, gutterID: String, value: HTMLElement): LineHandle = js.native
+  def setGutterMarker(line: Int, gutterID: String, value: HTMLElement): LineHandle = js.native
   def clearGutter(gutterID: String): Unit = js.native
   def addLineClass(line: js.Any, where: String, _clazz: String): LineHandle = js.native
   def removeLineClass(line: js.Any, where: String, clazz: String): LineHandle = js.native
@@ -140,12 +139,33 @@ trait LineWidget extends js.Object {
   def changed(): Unit = js.native
 }
 
+object EditorChangeLike {
+  lazy val empty: EditorChangeLike = new EditorChangeLike {
+    val text: Array[String] = js.Array()
+    val from: PositionLike = PositionLike.empty
+    val to: PositionLike = PositionLike.empty
+    val removed: js.Array[String] = js.Array()
+    val origin: String = ""
+  }
+}
+
+//an interface for editor changing events
+@ScalaJSDefined
+trait EditorChangeLike extends js.Object{
+  val from: PositionLike
+  val to: PositionLike
+  val text: js.Array[String]
+  val removed: js.Array[String]
+  val origin: String
+}
+
 @js.native
-trait EditorChange extends js.Object {
-  var from: Position = js.native
-  var to: Position = js.native
-  var text: js.Array[String] = js.native
-  var removed: String = js.native
+trait EditorChange extends EditorChangeLike{
+  val from: Position = js.native
+  val to: Position = js.native
+  val text: js.Array[String] = js.native
+  val removed: js.Array[String] = js.native
+  val origin: String = js.native
 }
 
 @js.native
@@ -159,10 +179,23 @@ trait EditorChangeCancellable extends EditorChange {
   def cancel(): Unit = js.native
 }
 
+object PositionLike {
+  lazy val empty = new PositionLike {
+    val ch = 0
+    val line = 0
+  }
+}
+//interface to deal zith Positions
+@ScalaJSDefined
+trait PositionLike extends js.Object{
+  val ch: Int
+  val line: Int
+}
+
 @js.native
-trait Position extends js.Object {
-  var ch: Double = js.native
-  var line: Double = js.native
+trait Position extends PositionLike{
+  val ch: Int = js.native
+  val line: Int = js.native
 }
 
 @js.native
@@ -180,15 +213,15 @@ trait EditorConfiguration extends js.Object {
   var extraKeys: js.Any = js.native
   var lineWrapping: Boolean = js.native
   var lineNumbers: Boolean = js.native
-  var firstLineNumber: Double = js.native
+  var firstLineNumber: Int = js.native
   var lineNumberFormatter: js.Function1[Double, String] = js.native
   var gutters: js.Array[String] = js.native
   var fixedGutter: Boolean = js.native
   var readOnly: js.Any = js.native
   var showCursorWhenSelecting: Boolean = js.native
-  var undoDepth: Double = js.native
+  var undoDepth: Int = js.native
   var historyEventDelay: Double = js.native
-  var tabindex: Double = js.native
+  var tabindex: Int = js.native
   var autofocus: Boolean = js.native
   var dragDrop: Boolean = js.native
   var onDragEvent: js.Function2[Editor, Event, Boolean] = js.native

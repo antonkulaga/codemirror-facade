@@ -28,7 +28,9 @@ object Dependencies {
 
 		"org.querki" %%% "jquery-facade" % Versions.jqueryFacade, //scalajs facade for jQuery + jQuery extensions
 
-		"org.denigma" %%% "binding-controls" % Versions.bindingControls
+		"org.denigma" %%% "binding-controls" % Versions.bindingControls,
+
+		"com.lihaoyi" %%% "fastparse" % Versions.fastParse
 	))
 
 	//dependencies on javascript libs
