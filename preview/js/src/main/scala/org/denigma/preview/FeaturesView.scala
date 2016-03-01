@@ -1,6 +1,5 @@
 package org.denigma.preview
 
-import editors.CodeMirrorEditor
 import org.denigma.binding.binders.ReactiveBinder
 import org.denigma.binding.views.BindableView
 import org.denigma.codemirror.{LineInfo, Editor, CodeMirror, EditorConfiguration}
@@ -18,6 +17,20 @@ import org.denigma.binding.extensions._
 import scalatags.JsDom.all._
 import fastparse.all._
 
+trait CommentsParser
+{
+  val comment = P( "##" | "#^" | "#" )
+  val notComment = P( ! comment ).flatMap(v => AnyChar)
+  val bracketsOrSpace = P("<" | ">" | " ")
+  val notBracketsOrSpace = CharPred(ch => ch != '<' && ch != '>' && ch != ' ')
+  val protocol = P( ("http" | "ftp" ) ~ "s".? ~ "://" )
+  val link: P[String] = P("<".? ~ (protocol ~ notBracketsOrSpace.rep).! ~ ">".? ) //map(_.toString)
+  val linkAfterComment = P( notComment.rep  ~ comment ~ " ".rep ~ link )
+}
+
+case object FeaturesParser extends CommentsParser {
+  def parse(str: String) = linkAfterComment.parse(str)
+}
 
 /**
   * Created by antonkulaga on 2/24/16.
@@ -25,8 +38,6 @@ import fastparse.all._
 class FeaturesView(val elem: Element) extends BindableView with EditorView with ExampleKappaData{
 
   //val linkParser = P( "a" )
-
-  "a" ~ "b"
 
 
   val defaultText: String = kappaCode
@@ -53,21 +64,32 @@ class FeaturesView(val elem: Element) extends BindableView with EditorView with 
   }
 
   changes.onChange{
-    case ch =>
-      val lines = ch.newLines
-      for( (num, line) <- lines){
-        println(s"$num : $line")
-        val marker = this.makeMarker("https://codemirror.net/demo/marker.html")
-        editor.setGutterMarker(num, "breakpoints", marker)
+    case changed =>
+      val (from, to) = changed.foldLeft( (Int.MaxValue, 0)) {
+        case (acc, ch) => ch.mergeSpans(acc)
       }
-      println(s"change is $ch")
+      val lines = from to to
+      //if(lines.nonEmpty)  editor.clearGutter("breakpoints")
+      for {
+        (num, line) <- editor.linesText(lines)
+      } {
+        //val info: LineInfo = editor.lineInfo(num)
+        //val markers: js.Array[String] = info.gutterMarkers
+        FeaturesParser.parse(line) match {
+          case Parsed.Success(result, index) =>
+            val marker = this.makeMarker(result)
+            editor.setGutterMarker(num, "breakpoints", marker)
+
+          case Parsed.Failure(parser, index, extra) =>
+            editor.setGutterMarker(num, "breakpoints", null) //test setting null
+        }
+      }
   }
 
   gutterClicks.onChange{
     case line =>
-      val marker = this.makeMarker("https://codemirror.net/demo/marker.html")
-      editor.setGutterMarker(line, "breakpoints", marker)
-    //println(s"gutter click on $line")
+    //  val marker = this.makeMarker("https://codemirror.net/demo/marker.html")
+  //    editor.setGutterMarker(line, "breakpoints", marker)
 
   }
 }
@@ -88,17 +110,18 @@ trait EditorView extends BindableView with EditorMaker with WithMirrors{
   }
 
   protected def subscribeEditor(editor: Editor) = {
-    def onChange(ed: Editor, change: EditorChangeLike): Unit = {
-      changes() = change
+    def onChanges(ed: Editor, ch: js.Array[EditorChangeLike]): Unit = {
+      changes() = ch
     }
     def onGutterClick(ed: Editor, line: Int): Unit = {
       gutterClicks() = line
     }
-    editor.addOnChange(onChange)
+    //editor.addOnChange(onChange)
     editor.addOnGutterClick(onGutterClick)
+    editor.addOnChanges(onChanges)
   }
 
-  lazy val changes: Var[EditorChangeLike] = Var(EditorChangeLike.empty)
+  lazy val changes: Var[js.Array[EditorChangeLike]] = Var(js.Array())
   lazy val gutterClicks: Var[Int] = Var(0)
 
   def contains(name: String): Boolean = if (_editor==null) false else {

@@ -1,18 +1,25 @@
 package org.denigma.codemirror.extensions
 
 
-import org.denigma.codemirror.{EditorChangeLike, EditorChange, Editor}
+import org.denigma.codemirror.{EditorChangeLike, Editor}
 
 import scala.scalajs.js
 
 class ExtendedChange(val change: EditorChangeLike) extends AnyVal {
 
-  def changedLineNumbers: Range = Range(change.from.line, change.to.line + change.text.length - change.removed.length )
+  def mergeSpans(other: (Int, Int)): (Int, Int) = (changedSpan, other) match {
+    case ( (min1, max1), (min2, max2) ) => (Math.min(min1, min2), Math.max(max1, max2))
+  }
+
+  def changedSpan = ( change.from.line,
+    change.to.line -( if(change.removed.length > 1) change.removed.length -1 else 0 ) + ( if(change.text.length > 1) change.text.length -1 else 0 )
+  ) //NOTE IS BUGGY
 
   def newLines: Map[Int, String] = change.text.zipWithIndex.map{
     case (s, i) => (i + change.from.line, s)
   } toMap
 
+  //def changedLines: Seq[Int] = change.text.indices.map{  case i => change.from.line + i } ++ change.removed.indices.map{  case i => change.from.line -i }
 }
 
 class ExtendedEditor(val editor: Editor) extends AnyVal

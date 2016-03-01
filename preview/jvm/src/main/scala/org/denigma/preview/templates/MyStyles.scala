@@ -1,6 +1,7 @@
 package org.denigma.preview.templates
 
 import scalacss.Defaults._
+import scalacss.LengthUnit.em
 
 object MyStyles extends StyleSheet.Standalone {
   import dsl._
@@ -12,5 +13,9 @@ object MyStyles extends StyleSheet.Standalone {
   ".CodeMirror-scroll" -(
     overflowX.auto,overflowY.hidden
   )
+
+  ".breakpoints" - (
+      width( 1 em)
+    )
 
 }
