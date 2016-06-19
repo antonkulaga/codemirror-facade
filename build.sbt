@@ -1,7 +1,6 @@
 import com.typesafe.sbt.gzip.Import.gzip
 import com.typesafe.sbt.web._
 import com.typesafe.sbt.web.pipeline.Pipeline
-import com.typesafe.sbteclipse.core
 import playscalajs.PlayScalaJS.autoImport._
 import playscalajs.ScalaJSPlay.autoImport._
 import playscalajs.{PlayScalaJS, ScalaJSPlay}
@@ -71,7 +70,7 @@ lazy val preview = crossProject
     libraryDependencies ++= Dependencies.sjsLibs.value,
     persistLauncher in Compile := true,
     persistLauncher in Test := false,
-    jsDependencies += RuntimeDOM % "test"
+    jsDependencies += RuntimeDOM % Test
   )
   .jvmConfigure(p=>p.enablePlugins(SbtTwirl, SbtWeb).enablePlugins(PlayScalaJS)) //despite "Play" in name it is actually sbtweb-related plugin
   .jvmSettings(
@@ -80,7 +79,7 @@ lazy val preview = crossProject
   scalaJSDevStage := scalaJSDevTaskStage.value,
   //pipelineStages := Seq(scalaJSProd, gzip),
   (emitSourceMaps in fullOptJS) := true,
-  pipelineStages in Assets := Seq(scalaJSDevStage/*scalaJSProd*/, gzip), //for run configuration
+  pipelineStages in Assets := Seq(scalaJSDevStage, gzip), //for run configuration
   (fullClasspath in Runtime) += (packageBin in Assets).value //to package production deps
 )
 lazy val previewJS = preview.js
