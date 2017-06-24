@@ -8,6 +8,9 @@ scala:
 
 sudo: false
 
+env:
+   - TRAVIS_NODE_VERSION="5"
+
 install:
    - npm install jsdom
 
