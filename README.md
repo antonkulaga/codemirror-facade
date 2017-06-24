@@ -12,6 +12,8 @@ resolvers += sbt.Resolver.bintrayRepo("denigma", "denigma-releases") //add resol
 libraryDependencies += "org.denigma" %%% "codemirror-facade" % "5.11-0.7" //add dependency
 ```
 
+Currently both Scala 2.11.x and Scala 2.12.x are supported.
+
 In your code:
 -------------
 

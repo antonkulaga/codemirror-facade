@@ -1,10 +1,11 @@
 package org.denigma.codemirror
 
 import org.scalajs._
-import org.scalajs.dom.raw.{HTMLTextAreaElement, Event, HTMLElement}
+import org.scalajs.dom.raw.{Event, HTMLElement, HTMLTextAreaElement}
+
 import scala.scalajs.js
 import scala.scalajs.js._
-import scala.scalajs.js.annotation.{ScalaJSDefined, JSName}
+import scala.scalajs.js.annotation.{JSGlobal, JSName, ScalaJSDefined}
 
 @js.native
 trait LineInfo extends js.Object {
@@ -74,7 +75,7 @@ trait Editor extends js.Object {
 
 
 @js.native
-@JSName("Doc")
+@JSGlobal("Doc")
 class Doc protected () extends js.Object {
   def this(text: String, mode: js.Any = js.native, firstLineNumber: Double = js.native) = this()
   def getValue(seperator: String = js.native): String = js.native
@@ -253,7 +254,7 @@ trait TextMarkerOptions extends js.Object {
 }
 
 @js.native
-@JSName("CodeMirror")
+@JSGlobal("CodeMirror")
 object CodeMirror extends js.Object {
   var Pass: js.Any = js.native
   def fromTextArea(host: HTMLTextAreaElement, options: EditorConfiguration = js.native): Editor = js.native

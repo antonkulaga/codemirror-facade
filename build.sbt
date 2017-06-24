@@ -33,6 +33,7 @@ lazy val noPublishSettings = Seq(
 //settings for all the projects
 lazy val commonSettings = Seq(
   scalaVersion := Versions.scala,
+  crossScalaVersions := Seq("2.11.11", "2.12.2"),
   organization := "org.denigma",
   resolvers += sbt.Resolver.bintrayRepo("denigma", "denigma-releases"), //for scala-js-binding
   libraryDependencies ++= Dependencies.commonShared.value++Dependencies.testing.value,
@@ -68,8 +69,8 @@ lazy val preview = crossProject
   .jsConfigure(p=>p.dependsOn(facade).enablePlugins(ScalaJSPlay))
   .jsSettings(
     libraryDependencies ++= Dependencies.sjsLibs.value,
-    persistLauncher in Compile := true,
-    persistLauncher in Test := false,
+    scalaJSUseMainModuleInitializer in Compile := true,
+    scalaJSUseMainModuleInitializer in Test := false,
     jsDependencies += RuntimeDOM % Test
   )
   .jvmConfigure(p=>p.enablePlugins(SbtTwirl, SbtWeb).enablePlugins(PlayScalaJS)) //despite "Play" in name it is actually sbtweb-related plugin
