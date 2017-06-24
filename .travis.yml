@@ -4,7 +4,7 @@ jdk:
   - oraclejdk8
 
 scala:
-  - 2.11.7
+  - 2.12.2
 
 sudo: false
 
@@ -15,7 +15,7 @@ cache:
 
 script:
   # Your normal script
-  - sbt -J-XX:ReservedCodeCacheSize=256M test
+  - sbt -J-XX:ReservedCodeCacheSize=256M +test
 
   # Tricks to avoid unnecessary cache updates
   - find $HOME/.sbt -name "*.lock" | xargs rm

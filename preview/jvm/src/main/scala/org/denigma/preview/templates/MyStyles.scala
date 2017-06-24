@@ -1,7 +1,7 @@
 package org.denigma.preview.templates
 
 import scalacss.Defaults._
-import scalacss.LengthUnit.em
+
 
 object MyStyles extends StyleSheet.Standalone {
   import dsl._

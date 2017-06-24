@@ -1,18 +1,15 @@
 package org.denigma.preview
 
-import org.denigma.binding.binders.{NavigationBinder, GeneralBinder}
-import org.denigma.binding.extensions.sq
+import org.denigma.binding.binders.{GeneralBinder, NavigationBinder}
+import org.denigma.binding.extensions.{sq, _}
 import org.denigma.binding.views.BindableView
 import org.denigma.controls.code.CodeBinder
 import org.querki.jquery._
 import org.scalajs.dom
 import org.scalajs.dom.raw.HTMLElement
-import org.denigma.binding.extensions._
 
-import scala.collection.immutable.Map
 import scala.scalajs.js
-import scala.scalajs.js.annotation.JSExport
-import scala.util.Try
+import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
 
 /**
  * Just a simple view for the whole app, if interested ( see https://github.com/antonkulaga/scala-js-binding )
@@ -23,7 +20,7 @@ object FrontEnd extends BindableView with scalajs.js.JSApp
 
   lazy val elem: HTMLElement = dom.document.body
 
-  val sidebarParams = js.Dynamic.literal(
+  lazy val sidebarParams = js.Dynamic.literal(
     exclusive = false,
     dimPage = false,
     closable = false,
@@ -66,6 +63,7 @@ object FrontEnd extends BindableView with scalajs.js.JSApp
 
 
   withBinders(me => List(new CodeBinder(me), new NavigationBinder(me)))
+
 
 
 }
