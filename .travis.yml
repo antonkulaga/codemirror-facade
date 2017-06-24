@@ -8,6 +8,9 @@ scala:
 
 sudo: false
 
+install:
+   - npm install jsdom
+
 cache:
   directories:
     - $HOME/.ivy2/cache
