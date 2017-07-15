@@ -1,5 +1,5 @@
 org.denigma.codemirror facade
-=================
+=============================
 
 This if a facade of org.denigma.codemirror library. All the code is inside org.denigma.codemirror subproject.
 
@@ -9,7 +9,7 @@ Usage
 In order to resolve a lib you should add a resolver::
 ```scala
 resolvers += sbt.Resolver.bintrayRepo("denigma", "denigma-releases") //add resolver
-libraryDependencies += "org.denigma" %%% "codemirror-facade" % "5.11-0.7" //add dependency
+libraryDependencies += "org.denigma" %%% "codemirror-facade" % "5.13.2-0.8" //add dependency
 ```
 
 Currently both Scala 2.11.x and Scala 2.12.x are supported.

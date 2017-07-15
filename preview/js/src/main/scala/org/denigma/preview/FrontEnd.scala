@@ -15,6 +15,7 @@ import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
  * Just a simple view for the whole app, if interested ( see https://github.com/antonkulaga/scala-js-binding )
  */
 @JSExport("FrontEnd")
+@JSExportTopLevel("FrontEnd")
 object FrontEnd extends BindableView with scalajs.js.JSApp
 {
 

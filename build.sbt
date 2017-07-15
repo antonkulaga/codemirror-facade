@@ -1,12 +1,9 @@
-import com.typesafe.sbt.gzip.Import.gzip
 import com.typesafe.sbt.web._
 import com.typesafe.sbt.web.pipeline.Pipeline
-import playscalajs.PlayScalaJS.autoImport._
-import playscalajs.ScalaJSPlay.autoImport._
-import playscalajs.{PlayScalaJS, ScalaJSPlay}
 import sbt.Keys._
 import sbt._
 import spray.revolver.RevolverPlugin.autoImport._
+import sbtcrossproject.{crossProject, CrossType}
 
 lazy val bintrayPublishIvyStyle = settingKey[Boolean]("=== !publishMavenStyle") //workaround for sbt-bintray bug
 
@@ -50,37 +47,27 @@ lazy val facade = Project(libName, file("facade"))
     libraryDependencies ++= Dependencies.facadeDependencies.value
   ) enablePlugins ScalaJSPlugin disablePlugins RevolverPlugin
 
-
-lazy val scalaJSDevStage  = Def.taskKey[Pipeline.Stage]("Apply fastOptJS on all Scala.js projects")
-
-def scalaJSDevTaskStage: Def.Initialize[Task[Pipeline.Stage]] = Def.task { mappings: Seq[PathMapping] =>
-  mappings ++ PlayScalaJS.devFiles(Compile).value ++ PlayScalaJS.sourcemapScalaFiles(fastOptJS).value
-}
-
-
 // some useful UI controls + shared code
-lazy val preview = crossProject
+lazy val preview = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Full)
   .in(file("preview"))
   .settings(commonSettings++publishSettings: _*)
   .settings(
     name := "preview"
   ).disablePlugins(RevolverPlugin)
-  .jsConfigure(p=>p.dependsOn(facade).enablePlugins(ScalaJSPlay))
+  .jsConfigure(p=>p.dependsOn(facade).enablePlugins(ScalaJSPlugin, ScalaJSWeb))
   .jsSettings(
     libraryDependencies ++= Dependencies.sjsLibs.value,
     scalaJSUseMainModuleInitializer in Compile := true,
     scalaJSUseMainModuleInitializer in Test := false,
     jsDependencies += RuntimeDOM % Test
   )
-  .jvmConfigure(p=>p.enablePlugins(SbtTwirl, SbtWeb).enablePlugins(PlayScalaJS)) //despite "Play" in name it is actually sbtweb-related plugin
+  .jvmConfigure(p=>p.enablePlugins(SbtTwirl, SbtWeb))
   .jvmSettings(
   libraryDependencies ++= Dependencies.akka.value ++ Dependencies.webjars.value,
   mainClass in Compile :=Some("org.denigma.preview.Main"),
-  scalaJSDevStage := scalaJSDevTaskStage.value,
-  //pipelineStages := Seq(scalaJSProd, gzip),
+  pipelineStages in Assets := Seq(scalaJSPipeline),
   (emitSourceMaps in fullOptJS) := true,
-  pipelineStages in Assets := Seq(scalaJSDevStage, gzip), //for run configuration
   (fullClasspath in Runtime) += (packageBin in Assets).value //to package production deps
 )
 lazy val previewJS = preview.js

@@ -8,11 +8,11 @@ object Versions extends WebJarsVersions with ScalaJSVersions with SharedVersions
 
 trait ScalaJSVersions {
 
-	val facade = "5.13.2-0.7"
+	val facade = "5.13.2-0.8"
 
 	val jqueryFacade = "1.0"
 
-	val dom = "0.9.2"
+	val dom = "0.9.3"
 
 	val bindingControls = "0.0.25"
 
